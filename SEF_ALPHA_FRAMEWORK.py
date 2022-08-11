@@ -59,15 +59,15 @@ age :  {}<br>
        return "No results found\n"
 '''
 app =  Flask(__name__)
-app.secret_key = "STEM for all"
-lm.init_app(app)
-bcrypt = Bcrypt(app)
+app.secret_key = "STEM for all" #A key required to sign sessions, cookies, etc.
+lm.init_app(app)#Initializes the application's support fot login operations.
+bcrypt = Bcrypt(app)#required for using flask_bcrypt's password encryption.
 online_users = []
 db_users = {}
 
 
            
-class user():
+class user():#necessary to work with the loginManager.
    def __init__(self, ID, username, is_authenticated = True, is_active = True , is_anonymous = False):
       self.is_authenticated=is_authenticated
       self.is_active=is_active
@@ -82,7 +82,7 @@ conn = sqlite3.connect("database.sqlite3")
 @lm.user_loader
 def load_user(user_id):
    data = get_user_wID(user_id)
-   return user(data[0], data[1], data[9])
+   return user(data[0], data[1])
 
 @app.route('/')#the home page
 def index():
@@ -95,10 +95,10 @@ def admin():
 '''@app.route('/test')
 
 def something():
-   return r("CV.html")'''
+   return r("CV.html")'''#for purpose of testing
 
 @app.route('/login', methods=["POST", "GET"])
-def login():
+def login():#the main function that dictates the log-in operation
    print("Log in initiated")
    conn = sqlite3.connect("database.sqlite3")
    c = conn.cursor()
@@ -125,7 +125,7 @@ def login():
 
    
 @app.route('/register', methods=["POST", "GET"])
-def register():
+def register():#rRegisters a user into the database.
    if request.method == "POST":
       username = request.form["username"]
       firstname = request.form["firstname"]
@@ -145,7 +145,7 @@ def register():
    else:
       return r("Register-cover.html")
       
-@app.route('/logout')
+@app.route('/logout')#Logs out a user.
 @login_required
 def logout():
    logout_user()
@@ -153,12 +153,10 @@ def logout():
 
 @app.route('/profile')
 @login_required
-def profile():
+def profile():#It is planned to add more functionanlity to the profile page.
+   #TODO
    return "Hello, fellow user."
 
 
-
-
-
-if __name__=="__main__":
+if __name__=="__main__":#Runs the flask app in debug mode
    app.run(debug=True)
