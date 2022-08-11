@@ -10,10 +10,10 @@ flask_bcrypt (1.0.1 or newer)
 flask_login (0.7.0 or newer)
 ================================
 FEATURES: -
--It supports operations like registering new users, logging-in, and logging-out.
--The privacy of the users is secured using the flask_bcrypt hashing algorithm in order to increase the safety of the website.
--An SQLite3 database is used to accomodate any number of users.
--A database generating, and manipulating tool has been also developed, and provided to offer flexibility when testing certain functions of the website and the database.
+-It supports operations like registering new users, logging-in, and logging-out.<br>
+-The privacy of the users is secured using the flask_bcrypt hashing algorithm in order to increase the safety of the website.<br>
+-An SQLite3 database is used to accomodate any number of users.<br>
+-A database generating, and manipulating tool has been also developed, and provided to offer flexibility when testing certain functions of the website and the database.<br>
 ================================
 MANUAL(FOR PERSONAL SETUP): -
 After installing the prerequisites mentioned above, download this package and run DB_Gen.py (to initialize a database if not existent), then SEF_ALPHA_FRAMEWORK.py. It will instantly setup a webpage accessible through "localhost:5000" which redirects the user to the register page. (If a user is already registered, 
