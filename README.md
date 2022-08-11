@@ -9,7 +9,7 @@ REQUIRED EXTERNAL PACKAGES: -<br>
 -flask_bcrypt (1.0.1 or newer)<br>
 -flask_login (0.7.0 or newer)<br>
 ================================
-FEATURES: -
+FEATURES: -<br>
 -It supports operations like registering new users, logging-in, and logging-out.<br>
 -The privacy of the users is secured using the flask_bcrypt hashing algorithm in order to increase the safety of the website.<br>
 -An SQLite3 database is used to accomodate any number of users.<br>
