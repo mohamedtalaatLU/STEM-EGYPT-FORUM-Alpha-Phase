@@ -1,6 +1,6 @@
 # STEM-EGYPT-FORUM-Alpha-Phase
 ================================
-This is the repository of STEM EGYPT FORUM, a platform intended to bring all STEMmers from all over the Arab Republic of Egypt to a one place!
+This is the repository of STEM EGYPT FORUM, a platform intended to bring all STEMmers from all over the Arab Republic of Egypt to a one place\!
 ================================
 INTERPRETER: -
 PYTHON (3.9 or newer)
