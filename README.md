@@ -12,7 +12,7 @@ REQUIRED EXTERNAL PACKAGES: -<br>
 FEATURES: -<br>
 -It supports operations like registering new users, logging-in, and logging-out.<br>
 -The privacy of the users is secured using the flask_bcrypt hashing algorithm in order to increase the safety of the website.<br>
--An SQLite3 database is used to accomodate any number of users.<br>
+-An SQLite3 database is utilized to accomodate any number of users.<br>
 -A database generating, and manipulating tool has been also developed, and provided to offer flexibility when testing certain functions of the website and the database.<br>
 ================================
 MANUAL(FOR PERSONAL SETUP): -<br>
