@@ -1,18 +1,18 @@
 import sqlite3
-from hashlib import sha512
+from hashlib import sha512 #Imported for testing the encryption of password
 
-conn = sqlite3.connect("database.sqlite3")
+conn = sqlite3.connect("database.sqlite3") #initializes a connection to the database (And creates one if not existent)
 
 c = conn.cursor()
 
 c.execute("CREATE TABLE IF NOT EXISTS users(id TEXT, username TEXT, firstname TEXT, lastname TEXT, alias TEXT, school TEXT, email TEXT, homecity TEXT, grade TEXT ,password TEXT)")
 
-def register(ID, username, firstname, lastname,  alias, school, email, homecity, grade, password):
+def register(ID, username, firstname, lastname,  alias, school, email, homecity, grade, password): #Registers a new user.
 
    c.execute("INSERT INTO users VALUES(?, ?, ?, ?, ? , ?, ?, ?, ?, ?)", (ID, username, firstname, lastname, alias, school, email, homecity, grade, password))
    conn.commit()
    
-def read_all():
+def read_all(): #Reads and outputs all data in the database.
    
    c.execute("SELECT * FROM users")
    
@@ -20,18 +20,16 @@ def read_all():
    
    return info
 
-def get_rows(prop):
+def get_rows(prop):#Searches, and returns all rows of data associated with a given property.
    rows = list(read_all())
    data = []
    for row in rows :
        row = list(row)
        if prop in row :
            data.append(row)
-   
-		 
    return data
 def delete(username, password):
-   c.execute("DELETE FROM users WHERE username == ? AND password == ?", (username, password))
+   c.execute("DELETE FROM users WHERE username == ? AND password == ?", (username, password))#Deletes a specific user associated with a specific username and password
    conn.commit()
 
 
@@ -47,7 +45,7 @@ age : """, data[2], """
    else :
        print("No results found")
 '''
-while True:
+while True:#Commands used to test the database separately.
    command = input()
    if command == "help" :
        print("""=========
