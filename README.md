@@ -4,6 +4,9 @@ This is the repository of STEM EGYPT FORUM, a platform intended to bring all STE
 INTERPRETER: -<br>
 PYTHON (3.9 or newer)
 ================================
+PACKAGE USED FOR WEBSITE BUILDING: -<br>
+-Bootstrap<br>
+================================
 REQUIRED EXTERNAL PACKAGES: -<br>
 -flask (2.2.2 or newer)<br>
 -flask_bcrypt (1.0.1 or newer)<br>
