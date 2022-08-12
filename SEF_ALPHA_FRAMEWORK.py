@@ -109,8 +109,6 @@ def login():#the main function that dictates the log-in operation
       user_data = get_user_wUsername(username)
       if (bcrypt.check_password_hash(user_data[9], password)):
          online_users.append(user(user_data[0], user_data[1]))
-         online_users[len(online_users)-1].username = user_data[1]
-         online_users[len(online_users)-1].ID = user_data[0]
          login_user(online_users[len(online_users)-1], remember = True)
          flash("Login attempt successful")
          print("Authentication successful.")
