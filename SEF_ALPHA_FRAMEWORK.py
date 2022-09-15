@@ -1,7 +1,8 @@
-from flask import Flask, render_template as r, url_for, request, session, flash, redirect
-from flask_login import LoginManager, login_required, logout_user, login_user
+from flask import Flask, render_template as r, url_for, request, session, flash, redirect, make_response
+from flask_login import LoginManager, login_required, logout_user, login_user, current_user, UserMixin
 from flask_bcrypt import Bcrypt
 from uuid import uuid4 as gen_id
+from datetime import datetime as t
 import sqlite3
 def reg(ID, username, firstname, lastname,  alias, school, email, homecity, grade, password):
    conn = sqlite3.connect("database.sqlite3")
@@ -12,6 +13,27 @@ def read_all():
    conn = sqlite3.connect("database.sqlite3")
    c = conn.cursor()
    c.execute("SELECT * FROM users")
+   
+   info = c.fetchall()
+   
+   return info
+def new_post(userid , username, txt): #Registers a new user.
+   conn = sqlite3.connect("posts.sqlite3")
+   c = conn.cursor()
+   f = open("thumbnail.txt", "r")
+   atch = int(f.read())+ 1
+   atch =int(atch)
+   f.close()
+   f = open("thumbnail.txt", "w")
+   f.write(str(atch))
+   f.close
+   c.execute("INSERT INTO posts VALUES(?, ?, ?, ?, ?, ?)", (str(gen_id()), userid, username , t.now().strftime("%c") , txt, atch))
+   conn.commit()
+
+def read_all_posts():
+   conn = sqlite3.connect("posts.sqlite3")
+   c = conn.cursor()
+   c.execute("SELECT * FROM posts ORDER BY atch DESC;")
    
    info = c.fetchall()
    
@@ -29,17 +51,22 @@ def get_rows(prop):
 def get_user_wID(prop):
    rows = list(read_all())
    res = []
+   print("The available data is :")
+   print(rows)
    for row in rows :
        row = list(row)
-       if prop == row[0] :
+       if prop in row :
            res = row
-   return row
+   return res
+           
 def get_user_wUsername(username):
    rows = list(read_all())
    res = []
+   print("The available data is :")
+   print(rows)
    for row in rows :
        row = list(row)
-       if username == row[1] :
+       if username in row :
            res = row
    return res
 lm = LoginManager()
@@ -62,31 +89,54 @@ app =  Flask(__name__)
 app.secret_key = "STEM for all" #A key required to sign sessions, cookies, etc.
 lm.init_app(app)#Initializes the application's support fot login operations.
 bcrypt = Bcrypt(app)#required for using flask_bcrypt's password encryption.
-online_users = []
+logged_users = {}
 db_users = {}
 
-
            
-class user():#necessary to work with the loginManager.
-   def __init__(self, ID, username, is_authenticated = True, is_active = True , is_anonymous = False):
-      self.is_authenticated=is_authenticated
-      self.is_active=is_active
-      self.ID = ID
-      self.username = username
-      self.is_anonymous = is_anonymous
-   def get_id(inp):
-      return gen_id()
-   
+class user(UserMixin):#necessary to work with the loginManager.
+   def __init__(self, data):
+      self.id = data[0]
+      self.username = data[1]
+   def get_id(self):
+      return str(self.id)
+'''
+class post():
+   def __init__(self, data):
+      self.postid = data[0]
+      self.userid = data[1]
+      self.dt = data[2]
+      self.txt = data[3]
+      self.atch = data[4]
+''' 
 conn = sqlite3.connect("database.sqlite3")
 
 @lm.user_loader
 def load_user(user_id):
+   d = str(user_id)
+   print("Loading user with ID: "+d)
+   
    data = get_user_wID(user_id)
-   return user(data[0], data[1])
+   session["ID"] = data[0]
+   session["username"] = data[1]
+   return user(data)
 
-@app.route('/')#the home page
+@app.route('/', methods=["POST", "GET"])#the home page
 def index():
-   return redirect(url_for("register"))
+   sm = current_user.is_authenticated
+   if request.method == "POST":
+      if current_user.is_authenticated:
+         blog_post = request.form["data"]
+         new_post(session["ID"], session["username"], blog_post)
+         posts = read_all_posts()
+         return r("posts.html", posts=posts, auth = True)
+      else:
+         blog_post = request.form["data"]
+         new_post(session["ID"], session["username"], blog_post)
+         posts = read_all_posts()
+         return r("posts.html", posts=posts, auth = False)
+   else:
+      posts = read_all_posts()
+      return r("posts.html", posts=posts, auth = sm)
 
 @app.route('/admin')
 def admin():
@@ -99,20 +149,39 @@ def something():
 
 @app.route('/login', methods=["POST", "GET"])
 def login():#the main function that dictates the log-in operation
+   if current_user.is_authenticated:
+      logout_user()
+      session.pop("username", None)
+      session.pop("ID", None)
+      
    print("Log in initiated")
    conn = sqlite3.connect("database.sqlite3")
    c = conn.cursor()
    if request.method == "POST":
       print("Request recieved.")
-      username = request.form["username"]
-      password = request.form["password"]
-      user_data = get_user_wUsername(username)
-      if (bcrypt.check_password_hash(user_data[9], password)):
-         online_users.append(user(user_data[0], user_data[1]))
-         login_user(online_users[len(online_users)-1], remember = True)
-         flash("Login attempt successful")
-         print("Authentication successful.")
-         return redirect(url_for("profile"))
+      exist = True
+      try:
+         username = request.form["username"]
+         user_data = get_user_wUsername(username)
+         print(user_data)
+      except:
+         exist = False
+         
+      if (exist):
+         password = request.form["password"]
+         session["ID"] =  user_data[0]
+         current_user.username = username
+         current_user.id = user_data[0]
+         print(user_data[0])
+         if bcrypt.check_password_hash(user_data[9], password):
+            logged_users[user_data[0]]=(user(user_data))
+            login_user(logged_users[user_data[0]], remember = True)
+            #session["is_auth"] = True
+            flash("Login attempt successful")
+            print("Authentication successful.")
+            return redirect(url_for("profile"))
+         else:
+            return redirect(url_for("login"))
       else:
          flash("Invalid credentials, try again.")
          return redirect(url_for("login"))
@@ -146,15 +215,22 @@ def register():#rRegisters a user into the database.
 @app.route('/logout')#Logs out a user.
 @login_required
 def logout():
+   username = current_user.username
    logout_user()
-   return redirect(url_for('index'))
+   posts = read_all_posts()
+   session.pop("username", None)
+   session.pop("ID", None)
+   resp = make_response(r('posts.html', posts=posts, auth = False))
+   resp.delete_cookie(username)
+   return resp
 
-@app.route('/profile')
+
+@app.route('/profile/')
 @login_required
-def profile():#It is planned to add more functionanlity to the profile page.
+def profile():
    #TODO
-   return "Hello, fellow user."
-
+   data = get_user_wUsername(current_user.username)
+   return r("profile.html", data = data)
 
 if __name__=="__main__":#Runs the flask app in debug mode
-   app.run(debug=True)
+   app.run(host = "0.0.0.0",debug=True)
