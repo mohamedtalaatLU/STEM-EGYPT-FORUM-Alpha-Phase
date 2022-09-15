@@ -116,9 +116,12 @@ def load_user(user_id):
    print("Loading user with ID: "+d)
    
    data = get_user_wID(user_id)
-   session["ID"] = data[0]
-   session["username"] = data[1]
-   return user(data)
+   if data != []:
+      session["ID"] = data[0]
+      session["username"] = data[1]
+      return user(data)
+   else:
+      return user(["0", "anonymous"])
 
 @app.route('/', methods=["POST", "GET"])#the home page
 def index():
@@ -167,7 +170,7 @@ def login():#the main function that dictates the log-in operation
       except:
          exist = False
          
-      if (exist):
+      try: 
          password = request.form["password"]
          session["ID"] =  user_data[0]
          current_user.username = username
@@ -182,7 +185,7 @@ def login():#the main function that dictates the log-in operation
             return redirect(url_for("profile"))
          else:
             return redirect(url_for("login"))
-      else:
+      except:
          flash("Invalid credentials, try again.")
          return redirect(url_for("login"))
    else:
